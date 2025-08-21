@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fresher Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- EmailJS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script>
+        (function () {
+            emailjs.init("kvYWPYTL9GfkS_0rI"); // Replace with your EmailJS public key
+        })();
+    </script>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <h1>Harsha D</h1>
+            <ul>
+                <li><a href="#about">About</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section id="about">
+        <h2>About Me</h2>
+        <p>I am a Computer Science and Engineering student with strong skills in full-stack web development using
+            React.js, Node.js, and MySQL. I have built projects like a Medical Injury Classification System, Personal Book
+            Tracker, and Muse apps. I am eager to apply my knowledge in real-world projects while
+            continuously growing as a developer..</p>
+        <a href="assets/resume.pdf" download class="download-btn">Download Resume</a>
+    </section>
+    <section id="skills">
+        <h2>Skills</h2>
+        <div class="skills-container">
+
+            <div class="skill-category">
+                <h3 class="category-title">Programming Language</h3>
+                <ul class="skill-list">
+                    <li>HTML</li>
+                    <li>CSS</li>
+                    <li>JavaScript</li>
+                    <li>Python(Basics)</li>
+                    <li>Java</li>
+                </ul>
+            </div>
+
+            <div class="skill-category">
+                <h3 class="category-title">Frameworks / Libraries</h3>
+                <ul class="skill-list">
+                    <li>React</li>
+                    <li>Node.js</li>
+                    <li>Express.js</li>
+                    <li>Bootstrap</li>
+                </ul>
+            </div>
+
+            <div class="skill-category">
+                <h3 class="category-title">Databases</h3>
+                <ul class="skill-list">
+                    <li>MySQL</li>
+                    <li>MongoDB</li>
+                </ul>
+            </div>
+
+            <div class="skill-category">
+                <h3 class="category-title">Tools</h3>
+                <ul class="skill-list">
+                    <li>Git & GitHub</li>
+                    <li>VS Code</li>
+                    <li>Postman</li>
+                </ul>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="projects">
+        <h2>Projects</h2>
+        <div class="project-list">
+            <div class="project">
+                <h3>Project One</h3>
+                <p>A full-stack web application to manage and search medical injury terms with features
+                    for viewing, filtering, searching, and CRUD operations using React (frontend), Node.js
+                    with Express.js (backend), and MySQL. .</p>
+            </div>
+            <div class="project">
+                <h3>Project Two</h3>
+                <p> A Full-stack web application enabling users to organize their reading journey
+                    by adding, categorizing, and reviewing books, with intuitive status-based grouping and
+                    seamless CRUD functionality using React, Node.js with Express.js, and MySQL. .</p>
+            </div>
+            <div class="project">
+                <h3>Project Three</h3>
+                <p>A real-time collaborative music web application enabling users to join
+                    rooms via ID, upload and play synchronized audio, and chat using React and CSS
+                    (frontend) with Node.js, Express.js, and Socket.IO (backend). .</p>
+            </div>
+            <!-- <div class="project">
+                <h3>Project Four</h3>
+                <p>A portfolio website showcasing my skills and projects.</p>
+            </div> -->
+        </div>
+    </section>
+    <section id="contact">
+        <h2>Contact</h2>
+        <form id="contactForm">
+            <input type="text" name="user_name" placeholder="Your Name" required>
+            <input type="email" name="user_email" placeholder="Your Email" required>
+            <textarea name="message" placeholder="Your Message" required></textarea>
+            <button type="submit">Send</button>
+        </form>
+        <p id="formMessage"></p>
+    </section>
+    <footer>
+        <p>&copy; 2025 Harsha D. All rights reserved.</p>
+    </footer>
+    <script src="main.js"></script>
+</body>
+
+</html>
