@@ -1,205 +1,146 @@
 /* ============================================================
    script.js — Harsha D Portfolio
-   Handles: typed text, scroll effects, mobile nav,
-            active link highlighting, reveal animations
+   Single-Page App navigation: clicking a nav button shows
+   only that page, hides all others. No full-page scrolling.
 ============================================================ */
 
-/* ── 1. TYPED ROLE TEXT EFFECT ──────────────────────────────
-   Loops through an array of roles, typing and erasing each.
+/* ── 1. SPA PAGE NAVIGATION ────────────────────────────────
+   All elements with data-page="xxx" switch to that page.
+   This includes: nav buttons, drawer buttons, hero CTAs.
 ============================================================ */
-(function initTypedText() {
-  // Roles to cycle through
-  const roles = [
-    'Full-Stack Developer',
-    'MERN Stack Engineer',
-    'React.js Enthusiast',
-    'Problem Solver',
-  ];
+function navigateTo(pageId) {
+  // Hide every page
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
 
-  const el      = document.getElementById('typed-role');
-  if (!el) return;
-
-  let roleIndex = 0;   // Which role we're currently displaying
-  let charIndex = 0;   // How many characters have been typed
-  let isDeleting = false;
-  let pause = false;
-
-  function type() {
-    if (pause) {
-      setTimeout(type, 1600); // Wait a moment before deleting
-      pause = false;
-      return;
-    }
-
-    const current = roles[roleIndex];
-
-    if (!isDeleting) {
-      // --- TYPING: add one character at a time ---
-      charIndex++;
-      el.textContent = current.slice(0, charIndex);
-
-      if (charIndex === current.length) {
-        // Finished typing — pause, then start deleting
-        isDeleting = true;
-        pause = true;
-        setTimeout(type, 10);
-        return;
-      }
-      setTimeout(type, 70); // Typing speed (ms per character)
-    } else {
-      // --- DELETING: remove one character at a time ---
-      charIndex--;
-      el.textContent = current.slice(0, charIndex);
-
-      if (charIndex === 0) {
-        // Finished deleting — move to next role
-        isDeleting = false;
-        roleIndex  = (roleIndex + 1) % roles.length;
-        setTimeout(type, 300); // Brief pause before typing next
-        return;
-      }
-      setTimeout(type, 40); // Deleting speed (faster than typing)
-    }
+  // Show the target page
+  const target = document.getElementById('page-' + pageId);
+  if (target) {
+    target.classList.add('active');
+    target.scrollTop = 0; // Always start from top of page
   }
 
-  // Start after a short initial delay
-  setTimeout(type, 1200);
-})();
+  // Update active state on desktop nav links
+  document.querySelectorAll('.nav-link').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.page === pageId);
+  });
 
+  // Update active state on mobile drawer links
+  document.querySelectorAll('.drawer-link').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.page === pageId);
+  });
 
-/* ── 2. NAVBAR: scroll-shadow & active link ─────────────────
-   Adds .scrolled class to navbar for background blur,
-   and highlights the current section's nav link.
-============================================================ */
-(function initNavbar() {
-  const navbar    = document.getElementById('navbar');
-  const navLinks  = document.querySelectorAll('.nav-link');
-  const sections  = document.querySelectorAll('section[id]');
+  // Close mobile drawer when navigating
+  closeMobileDrawer();
 
-  function onScroll() {
-    // Show navbar background once user scrolls past 60px
-    if (window.scrollY > 60) {
-      navbar.classList.add('scrolled');
-    } else {
-      navbar.classList.remove('scrolled');
-    }
-
-    // Determine which section is in the viewport
-    let currentSection = '';
-    sections.forEach(section => {
-      const top    = section.offsetTop - 100;
-      const height = section.offsetHeight;
-      if (window.scrollY >= top && window.scrollY < top + height) {
-        currentSection = section.getAttribute('id');
-      }
-    });
-
-    // Apply .active class to matching nav link
-    navLinks.forEach(link => {
-      link.classList.remove('active');
-      if (link.getAttribute('href') === `#${currentSection}`) {
-        link.classList.add('active');
-      }
-    });
+  // Restart typed animation when going back to home
+  if (pageId === 'home') {
+    restartTyped();
   }
+}
 
-  // Throttle scroll handler for performance
-  let ticking = false;
-  window.addEventListener('scroll', () => {
-    if (!ticking) {
-      window.requestAnimationFrame(() => {
-        onScroll();
-        ticking = false;
-      });
-      ticking = true;
-    }
-  });
-
-  onScroll(); // Run once on load
-})();
-
-
-/* ── 3. MOBILE HAMBURGER MENU ──────────────────────────────
-   Toggles the mobile nav drawer open/closed.
-============================================================ */
-(function initMobileMenu() {
-  const hamburger = document.getElementById('hamburger');
-  const navLinks  = document.getElementById('navLinks');
-  const allLinks  = navLinks.querySelectorAll('.nav-link');
-
-  // Toggle menu on button click
-  hamburger.addEventListener('click', () => {
-    hamburger.classList.toggle('open');
-    navLinks.classList.toggle('open');
-  });
-
-  // Close menu when a link is clicked
-  allLinks.forEach(link => {
-    link.addEventListener('click', () => {
-      hamburger.classList.remove('open');
-      navLinks.classList.remove('open');
-    });
-  });
-
-  // Close menu when clicking outside
-  document.addEventListener('click', (e) => {
-    if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
-      hamburger.classList.remove('open');
-      navLinks.classList.remove('open');
-    }
-  });
-})();
-
-
-/* ── 4. SCROLL-REVEAL ANIMATION ────────────────────────────
-   Uses IntersectionObserver to add .visible to .reveal
-   elements when they enter the viewport.
-============================================================ */
-(function initReveal() {
-  // Get all elements that should animate in
-  const revealEls = document.querySelectorAll('.reveal');
-
-  // Create an observer
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          // Stop watching after it's revealed (one-time animation)
-          observer.unobserve(entry.target);
-        }
-      });
-    },
-    {
-      threshold: 0.12,    // Trigger when 12% of the element is visible
-      rootMargin: '0px 0px -40px 0px',  // Slight bottom offset
-    }
-  );
-
-  // Observe every reveal element
-  revealEls.forEach(el => observer.observe(el));
-})();
-
-
-/* ── 5. FOOTER YEAR ─────────────────────────────────────────
-   Keeps the footer copyright year always up-to-date.
-============================================================ */
-(function setFooterYear() {
-  const yearEl = document.getElementById('year');
-  if (yearEl) yearEl.textContent = new Date().getFullYear();
-})();
-
-
-/* ── 6. SMOOTH SCROLL for older browsers (fallback) ─────────
-   html { scroll-behavior: smooth } handles modern browsers.
-   This covers edge cases.
-============================================================ */
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-  anchor.addEventListener('click', function (e) {
-    const target = document.querySelector(this.getAttribute('href'));
-    if (target) {
-      e.preventDefault();
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+// Wire up every element that has data-page attribute
+document.querySelectorAll('[data-page]').forEach(el => {
+  el.addEventListener('click', () => {
+    navigateTo(el.dataset.page);
   });
 });
+
+
+/* ── 2. MOBILE DRAWER (hamburger menu) ─────────────────────
+   Opens / closes the slide-down drawer.
+============================================================ */
+const hamburger    = document.getElementById('hamburger');
+const mobileDrawer = document.getElementById('mobileDrawer');
+const drawerOverlay = document.getElementById('drawerOverlay');
+
+function openMobileDrawer() {
+  hamburger.classList.add('open');
+  mobileDrawer.classList.add('open');
+  drawerOverlay.classList.add('visible');
+}
+
+function closeMobileDrawer() {
+  hamburger.classList.remove('open');
+  mobileDrawer.classList.remove('open');
+  drawerOverlay.classList.remove('visible');
+}
+
+hamburger.addEventListener('click', () => {
+  if (mobileDrawer.classList.contains('open')) {
+    closeMobileDrawer();
+  } else {
+    openMobileDrawer();
+  }
+});
+
+// Clicking the overlay also closes the drawer
+drawerOverlay.addEventListener('click', closeMobileDrawer);
+
+
+/* ── 3. TYPED TEXT EFFECT ───────────────────────────────────
+   Cycles through role strings with type & erase animation.
+============================================================ */
+const roles = [
+  'Full-Stack Developer',
+  'MERN Stack Engineer',
+  'React.js Enthusiast',
+  'Problem Solver',
+];
+
+let roleIndex = 0;
+let charIndex = 0;
+let isDeleting = false;
+let typedTimer = null;
+
+function typeStep() {
+  const el = document.getElementById('typed-role');
+  if (!el) return;
+
+  const current = roles[roleIndex];
+
+  if (!isDeleting) {
+    // Typing forward
+    charIndex++;
+    el.textContent = current.slice(0, charIndex);
+
+    if (charIndex === current.length) {
+      // Finished typing — wait, then delete
+      isDeleting = true;
+      typedTimer = setTimeout(typeStep, 1800);
+      return;
+    }
+    typedTimer = setTimeout(typeStep, 70);
+  } else {
+    // Deleting backward
+    charIndex--;
+    el.textContent = current.slice(0, charIndex);
+
+    if (charIndex === 0) {
+      // Move to next role
+      isDeleting = false;
+      roleIndex = (roleIndex + 1) % roles.length;
+      typedTimer = setTimeout(typeStep, 350);
+      return;
+    }
+    typedTimer = setTimeout(typeStep, 38);
+  }
+}
+
+function restartTyped() {
+  // Reset and restart typed animation
+  clearTimeout(typedTimer);
+  roleIndex = 0;
+  charIndex = 0;
+  isDeleting = false;
+  const el = document.getElementById('typed-role');
+  if (el) el.textContent = '';
+  setTimeout(typeStep, 800);
+}
+
+// Start on load
+setTimeout(typeStep, 1000);
+
+
+/* ── 4. FOOTER YEAR ─────────────────────────────────────── */
+const yearEl = document.getElementById('year');
+if (yearEl) yearEl.textContent = new Date().getFullYear();
